@@ -2,69 +2,96 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Compras por Categorías</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mi Lista de Suministros</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
         input[type="number"]::-webkit-inner-spin-button, 
         input[type="number"]::-webkit-outer-spin-button { 
             -webkit-appearance: none; 
             margin: 0; 
         }
+
+        /* Animación suave para cambios de vista */
+        .view-transition {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 pb-28 min-h-screen text-[15px]">
+<body class="bg-slate-50 text-slate-900 pb-32 min-h-screen select-none">
 
-    <!-- Encabezado Principal -->
-    <header class="sticky top-0 z-40 bg-emerald-600 text-white px-4 py-5 shadow-xl">
+    <!-- Header Fijo -->
+    <header class="sticky top-0 z-50 bg-emerald-600 text-white px-4 py-4 shadow-lg border-b border-emerald-700">
         <div class="max-w-md mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="bg-white/25 p-2 rounded-2xl backdrop-blur-md border border-white/30">
-                    <i data-lucide="shopping-bag" class="w-6 h-6 text-white"></i>
+                <div class="bg-white/20 p-2 rounded-xl backdrop-blur-md">
+                    <i data-lucide="shopping-cart" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-black tracking-tight leading-none uppercase">Mis Compras</h1>
-                    <p class="text-[10px] font-bold opacity-80 mt-1 uppercase tracking-widest">Organizado por categorías</p>
+                    <h1 class="text-lg font-black leading-none uppercase tracking-tight">Logística App</h1>
+                    <p class="text-[9px] font-bold opacity-70 uppercase tracking-widest mt-1">Guardado Automático</p>
                 </div>
             </div>
-            <button onclick="resetAll()" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-full transition-all active:rotate-180 duration-500">
-                <i data-lucide="rotate-ccw" class="w-5 h-5 text-white"></i>
-            </button>
+            <div class="flex gap-2">
+                <button onclick="copyToClipboard()" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-full transition-all" title="Copiar lista">
+                    <i data-lucide="copy" class="w-5 h-5"></i>
+                </button>
+                <button onclick="resetAll()" class="p-2.5 bg-rose-500/20 hover:bg-rose-500/40 rounded-full transition-all" title="Borrar todo">
+                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                </button>
+            </div>
         </div>
     </header>
 
-    <main id="app-content" class="max-w-md mx-auto px-4 mt-6">
-        <!-- Contenido dinámico -->
+    <main id="app-content" class="max-w-md mx-auto px-4 mt-6 mb-10">
+        <!-- El contenido se inyecta vía JavaScript -->
     </main>
 
-    <!-- Navegación Inferior -->
-    <nav class="fixed bottom-8 left-6 right-6 max-w-md mx-auto z-50">
-        <div class="bg-slate-900/95 backdrop-blur-xl rounded-[2.5rem] p-2 flex gap-2 shadow-2xl border border-white/10 ring-1 ring-black/20">
-            <button id="nav-stores" onclick="switchView('stores')" class="flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-emerald-500 text-white shadow-inner scale-[1.03]">
+    <!-- Barra de Navegación y Acciones -->
+    <nav class="fixed bottom-6 left-4 right-4 max-w-md mx-auto z-50">
+        <div class="bg-slate-900/95 backdrop-blur-xl rounded-[2.5rem] p-2 flex gap-2 shadow-2xl border border-white/10">
+            <button id="nav-stores" onclick="switchView('stores')" class="flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-emerald-500 text-white shadow-lg">
                 <i data-lucide="store" class="w-4 h-4"></i>
-                TIENDAS
+                Tiendas
             </button>
             <button id="nav-summary" onclick="switchView('summary')" class="flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all text-slate-400 relative">
-                <i data-lucide="clipboard-list" class="w-4 h-4"></i>
-                RESUMEN
-                <span id="badge-count" class="hidden absolute -top-1 right-6 bg-white text-slate-900 text-[10px] w-6 h-6 rounded-full flex items-center justify-center font-black shadow-lg ring-4 ring-slate-900 border-2 border-slate-900">0</span>
+                <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                Resumen
+                <span id="badge-count" class="hidden absolute -top-1 right-6 bg-rose-500 text-white text-[9px] w-5 h-5 rounded-full flex items-center justify-center font-black ring-4 ring-slate-900">0</span>
             </button>
         </div>
     </nav>
 
+    <!-- Botón Flotante para Descargar (Solo en Resumen) -->
+    <div id="download-fab" class="fixed bottom-24 right-6 hidden z-40">
+        <button onclick="downloadList()" class="bg-blue-600 text-white p-4 rounded-full shadow-2xl active:scale-90 transition-transform">
+            <i data-lucide="download" class="w-6 h-6"></i>
+        </button>
+    </div>
+
     <script>
+        // Datos organizados por tienda y categoría
         const INITIAL_DATA = {
             "Restaurant Depot": {
                 "Carnes": ["Pollo", "Carne Tacos", "Costillas", "Chorizo", "Caldo Pollo"],
                 "Vegetales": ["Cebolla", "Cilantro", "Perejil", "Lechuga", "Ajos", "Jalapeños", "Plátanos", "Pimiento Verde", "Chile Árbol", "Mix Vegetales", "Maíz", "Pimiento Diced", "Pimiento Rojo", "Albahaca", "Orégano", "Menta"],
                 "Lácteos y Frío": ["Sour Cream", "Margarina", "Queso Mozzarella", "Queso James", "Marg. Líquida", "Mayonesa"],
-                "Abarrotes y Especias": ["Frijoles", "Tomate Lata", "Arroz", "Sal", "Azúcar", "Pan Rayado", "Pan Burger", "Harina Pollo", "Sazón Azafrán", "Pimienta", "Paprika", "Mostaza", "Adobo", "Comino", "Ketchup", "Banana Pepper"],
+                "Abarrotes": ["Frijoles", "Tomate Lata", "Arroz", "Sal", "Azúcar", "Pan Rayado", "Pan Burger", "Harina Pollo", "Sazón Azafrán", "Pimienta", "Paprika", "Mostaza", "Adobo", "Comino", "Ketchup", "Banana Pepper"],
                 "Congelados": ["Papas Fritas", "Tortilla Maíz", "Tortilla n12", "Tacos N6", "Churros"],
                 "Bebidas": ["Red Bull Watermelon", "Red Bull Sugar Free"],
-                "Limpieza y Empaque": ["Aluminio", "Cajas Q1", "Cajas G1", "Cajas 206", "Cubiertos", "Bolsas Basura", "Guantes", "Detergente", "Desengrasante", "Potes Salsa", "Bolsas Llevar", "Limones", "Papel", "Fibra verde", "Piedra plancha", "Servilletas B", "Aceite Freír"]
+                "Insumos": ["Aluminio", "Cajas Q1", "Cajas G1", "Cajas 206", "Cubiertos", "Bolsas Basura", "Guantes", "Detergente", "Desengrasante", "Potes Salsa", "Bolsas Llevar", "Limones", "Papel", "Fibra verde", "Piedra plancha", "Servilletas B", "Aceite Freír"]
             },
             "Sams Club": {
                 "Panadería": ["Pan Lomo", "Pan Chori"],
@@ -76,7 +103,7 @@
             },
             "Walmart": {
                 "Carnes": ["Jamón", "Sirloni", "Carne Hamb.", "Carne Empan.", "Milanesa"],
-                "Sodas": ["Coca", "Coca Diet", "Lemonade", "Sprite", "Fanta", "Ginger Ale"],
+                "Bebidas": ["Coca", "Coca Diet", "Lemonade", "Sprite", "Fanta", "Ginger Ale"],
                 "Lácteos": ["Leche", "Huevos"],
                 "Vegetales": ["Perejil", "Tomate", "Aguacate"],
                 "Otros": ["Aceite Paella"]
@@ -95,17 +122,18 @@
             "GFS Gordon": "bg-rose-600"
         };
 
+        // Estado de la aplicación
         let state = {
-            quantities: JSON.parse(localStorage.getItem('shop-q-v6') || '{}'),
-            checked: JSON.parse(localStorage.getItem('shop-c-v6') || '{}'),
+            quantities: JSON.parse(localStorage.getItem('restaurant-app-quantities') || '{}'),
+            checked: JSON.parse(localStorage.getItem('restaurant-app-checked') || '{}'),
             activeStore: "Restaurant Depot",
             searchTerm: "",
             view: "stores"
         };
 
         function save() {
-            localStorage.setItem('shop-q-v6', JSON.stringify(state.quantities));
-            localStorage.setItem('shop-c-v6', JSON.stringify(state.checked));
+            localStorage.setItem('restaurant-app-quantities', JSON.stringify(state.quantities));
+            localStorage.setItem('restaurant-app-checked', JSON.stringify(state.checked));
             updateBadge();
         }
 
@@ -121,7 +149,7 @@
         }
 
         function resetAll() {
-            if(confirm("¿Estás seguro de borrar todos los datos?")) {
+            if(confirm("¿Estás seguro de borrar todas las cantidades y marcas?")) {
                 state.quantities = {};
                 state.checked = {};
                 save();
@@ -133,13 +161,16 @@
             state.view = view;
             const btnStores = document.getElementById('nav-stores');
             const btnSummary = document.getElementById('nav-summary');
+            const downloadBtn = document.getElementById('download-fab');
 
             if (view === 'stores') {
-                btnStores.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-emerald-500 text-white shadow-inner scale-[1.03]";
+                btnStores.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-emerald-500 text-white shadow-lg";
                 btnSummary.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all text-slate-400 relative";
+                downloadBtn.classList.add('hidden');
             } else {
-                btnSummary.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-rose-500 text-white shadow-inner scale-[1.03] relative";
+                btnSummary.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-emerald-500 text-white shadow-lg relative";
                 btnStores.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all text-slate-400";
+                downloadBtn.classList.remove('hidden');
             }
             render();
         }
@@ -167,33 +198,98 @@
             render();
         }
 
+        // --- FUNCIONES DE EXPORTACIÓN ---
+
+        function generateListText() {
+            let text = `LISTA DE COMPRAS - ${new Date().toLocaleDateString()}\n`;
+            text += `==============================\n\n`;
+            
+            for (const [store, categories] of Object.entries(INITIAL_DATA)) {
+                let storeHasItems = false;
+                let storeText = `${store.toUpperCase()}\n------------------------------\n`;
+                
+                for (const [cat, items] of Object.entries(categories)) {
+                    const selected = items.filter(i => state.quantities[i] > 0);
+                    if (selected.length > 0) {
+                        storeHasItems = true;
+                        storeText += `[${cat}]\n`;
+                        selected.forEach(item => {
+                            const isDone = state.checked[item] ? "[OK] " : "[  ] ";
+                            storeText += `${isDone}${item}: ${state.quantities[item]}\n`;
+                        });
+                        storeText += `\n`;
+                    }
+                }
+                
+                if (storeHasItems) text += storeText + `\n`;
+            }
+            return text;
+        }
+
+        function downloadList() {
+            const text = generateListText();
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `lista_compras_${new Date().toISOString().slice(0,10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function copyToClipboard() {
+            const text = generateListText();
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert("¡Lista copiada al portapapeles!");
+            } catch (err) {
+                console.error("Error al copiar", err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // --- RENDERIZADO ---
+
         function render() {
             const container = document.getElementById('app-content');
+            container.className = "max-w-md mx-auto px-4 mt-6 mb-10 view-transition";
+            
             if (state.view === 'stores') renderStoresView(container);
             else renderSummaryView(container);
+            
             lucide.createIcons();
         }
 
         function renderStoresView(container) {
             let html = `
-                <div class="flex overflow-x-auto gap-3 mb-6 no-scrollbar py-2 sticky top-[76px] z-30 bg-slate-50">
+                <!-- Selector de Tiendas -->
+                <div class="flex overflow-x-auto gap-3 mb-6 no-scrollbar py-2 sticky top-[80px] z-30 bg-slate-50/95 backdrop-blur-sm">
                     ${Object.keys(INITIAL_DATA).map(store => `
                         <button onclick="state.activeStore='${store}'; render();" 
-                            class="flex-shrink-0 px-5 py-3 rounded-2xl text-[11px] font-black tracking-wider transition-all transform active:scale-90 ${state.activeStore === store ? STORE_THEMES[store] + ' text-white shadow-lg ring-2 ring-white ring-offset-2' : 'bg-white text-slate-500 border border-slate-200'}">
+                            class="flex-shrink-0 px-6 py-3 rounded-2xl text-[10px] font-black tracking-widest transition-all transform active:scale-95 ${state.activeStore === store ? STORE_THEMES[store] + ' text-white shadow-lg ring-2 ring-white ring-offset-2' : 'bg-white text-slate-500 border border-slate-200 shadow-sm'}">
                             ${store.toUpperCase()}
                         </button>
                     `).join('')}
                 </div>
-                <div class="relative mb-6 group sticky top-[138px] z-30 bg-slate-50 pb-2">
+
+                <!-- Buscador -->
+                <div class="relative mb-6 sticky top-[145px] z-30 bg-slate-50/95 backdrop-blur-sm pb-2">
                     <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none pb-2">
                         <i data-lucide="search" class="text-slate-400 w-5 h-5"></i>
                     </div>
-                    <input type="text" placeholder="Buscar..." 
+                    <input type="text" placeholder="¿Qué buscas en ${state.activeStore}?" 
                         oninput="state.searchTerm = this.value; renderItemsOnly();"
                         value="${state.searchTerm}"
-                        class="w-full pl-12 pr-4 py-4 bg-white border-2 border-transparent rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none shadow-sm transition-all font-semibold"
+                        class="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:border-emerald-500 outline-none shadow-sm font-bold text-sm"
                     />
                 </div>
+
                 <div id="items-list" class="space-y-8"></div>
             `;
             container.innerHTML = html;
@@ -211,23 +307,24 @@
                 if (filteredItems.length > 0) {
                     foundAny = true;
                     html += `
-                        <div class="space-y-3">
-                            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">${catName}</h3>
+                        <div class="space-y-4">
+                            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] pl-2">${catName}</h3>
                             <div class="space-y-3">
                                 ${filteredItems.map(item => {
                                     const isChecked = state.checked[item];
+                                    const hasQty = state.quantities[item] > 0;
                                     return `
-                                        <div class="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between shadow-sm transition-all ${isChecked ? 'opacity-40 grayscale-[0.5]' : ''}">
+                                        <div class="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between shadow-sm transition-all ${isChecked ? 'opacity-40 grayscale' : ''}">
                                             <div class="flex items-center gap-4 flex-1 min-w-0" onclick="toggleCheck('${item}')">
                                                 <button class="flex-shrink-0 w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all ${isChecked ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : 'border-slate-200 bg-white'}">
-                                                    ${isChecked ? '<i data-lucide="check-circle-2" class="w-4 h-4"></i>' : ''}
+                                                    ${isChecked ? '<i data-lucide="check" class="w-5 h-5"></i>' : ''}
                                                 </button>
                                                 <span class="font-bold text-slate-700 truncate ${isChecked ? 'line-through' : ''}">${item}</span>
                                             </div>
-                                            <div class="flex items-center gap-1 bg-slate-50 p-1.5 rounded-xl ml-4 border border-slate-100">
-                                                <button onclick="updateQuantity('${item}', -1)" class="w-9 h-9 flex items-center justify-center text-rose-500 active:scale-75"><i data-lucide="minus" class="w-4 h-4"></i></button>
+                                            <div class="flex items-center gap-1 bg-slate-50 p-1 rounded-xl ml-4 border border-slate-100">
+                                                <button onclick="updateQuantity('${item}', -1)" class="w-9 h-9 flex items-center justify-center text-rose-500 active:bg-rose-100 rounded-lg"><i data-lucide="minus" class="w-4 h-4"></i></button>
                                                 <input type="number" class="w-10 text-center bg-transparent font-black text-lg outline-none" value="${state.quantities[item] || ""}" placeholder="0" oninput="handleInput('${item}', this.value)" />
-                                                <button onclick="updateQuantity('${item}', 1)" class="w-9 h-9 flex items-center justify-center text-emerald-600 active:scale-75"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                                                <button onclick="updateQuantity('${item}', 1)" class="w-9 h-9 flex items-center justify-center text-emerald-600 active:bg-emerald-100 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button>
                                             </div>
                                         </div>
                                     `;
@@ -237,12 +334,8 @@
                     `;
                 }
             }
-
-            if (!foundAny) {
-                listContainer.innerHTML = `<div class="text-center py-20 text-slate-300 font-bold">No encontrado</div>`;
-            } else {
-                listContainer.innerHTML = html;
-            }
+            
+            listContainer.innerHTML = foundAny ? html : `<div class="text-center py-20 text-slate-300 font-bold uppercase tracking-widest text-[10px]">No se encontró nada</div>`;
             lucide.createIcons();
         }
 
@@ -251,46 +344,42 @@
             for (const [store, categories] of Object.entries(INITIAL_DATA)) {
                 const storeItems = [];
                 for (const [cat, items] of Object.entries(categories)) {
-                    const selectedInCat = items.filter(i => state.quantities[i] > 0);
-                    if (selectedInCat.length > 0) {
-                        storeItems.push({ cat, items: selectedInCat });
-                    }
+                    const selected = items.filter(i => state.quantities[i] > 0);
+                    if (selected.length > 0) storeItems.push({ cat, items: selected });
                 }
                 if (storeItems.length > 0) summaryData.push({ store, categories: storeItems });
             }
 
             let html = `
-                <div class="animate-in fade-in duration-300">
-                    <div class="flex items-center justify-between mb-8">
-                        <h2 class="text-2xl font-black text-slate-800 tracking-tight">Mi Carrito</h2>
-                        <div class="bg-emerald-100 text-emerald-700 px-4 py-1.5 rounded-full font-black text-xs">
-                            ${Object.values(state.quantities).filter(q => q > 0).length} ITEMS
-                        </div>
-                    </div>
+                <div class="mb-8">
+                    <h2 class="text-3xl font-black text-slate-800 tracking-tighter">Resumen</h2>
+                    <p class="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Listo para comprar</p>
+                </div>
             `;
 
             if (summaryData.length > 0) {
-                html += `<div class="space-y-10">`;
+                html += `<div class="space-y-10 pb-10">`;
                 summaryData.forEach(s => {
                     html += `
-                        <div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-md">
-                            <div class="${STORE_THEMES[s.store]} px-8 py-4 text-white">
-                                <span class="text-[10px] font-black tracking-[0.3em] uppercase">${s.store}</span>
+                        <div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-xl">
+                            <div class="${STORE_THEMES[s.store]} px-8 py-5 text-white flex justify-between items-center">
+                                <span class="text-[11px] font-black tracking-[0.3em] uppercase">${s.store}</span>
+                                <i data-lucide="shopping-bag" class="w-4 h-4 opacity-50"></i>
                             </div>
-                            <div class="p-4 space-y-6">
+                            <div class="p-6 space-y-8">
                                 ${s.categories.map(c => `
-                                    <div class="space-y-2">
-                                        <h4 class="text-[10px] font-black text-slate-300 uppercase tracking-tighter">${c.cat}</h4>
+                                    <div class="space-y-3">
+                                        <h4 class="text-[9px] font-black text-slate-300 uppercase tracking-widest border-b border-slate-50 pb-1">${c.cat}</h4>
                                         <div class="space-y-1">
                                             ${c.items.map(item => `
-                                                <div onclick="toggleCheck('${item}')" class="py-3 flex items-center justify-between transition-all ${state.checked[item] ? 'opacity-40' : ''}">
-                                                    <div class="flex items-center gap-3">
+                                                <div onclick="toggleCheck('${item}')" class="py-3 flex items-center justify-between transition-all ${state.checked[item] ? 'opacity-30 grayscale' : ''}">
+                                                    <div class="flex items-center gap-4">
                                                         <div class="w-7 h-7 rounded-lg border-2 flex items-center justify-center ${state.checked[item] ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-200'}">
-                                                            ${state.checked[item] ? '<i data-lucide="check-circle-2" class="w-4 h-4"></i>' : ''}
+                                                            ${state.checked[item] ? '<i data-lucide="check" class="w-4 h-4"></i>' : ''}
                                                         </div>
-                                                        <span class="font-bold text-sm ${state.checked[item] ? 'line-through' : ''}">${item}</span>
+                                                        <span class="font-bold text-sm text-slate-700 ${state.checked[item] ? 'line-through' : ''}">${item}</span>
                                                     </div>
-                                                    <span class="bg-slate-800 text-white font-black w-9 h-9 flex items-center justify-center rounded-xl text-xs shadow-sm">${state.quantities[item]}</span>
+                                                    <span class="bg-slate-900 text-white font-black w-10 h-10 flex items-center justify-center rounded-2xl text-xs shadow-lg ring-4 ring-slate-50">${state.quantities[item]}</span>
                                                 </div>
                                             `).join('')}
                                         </div>
@@ -302,12 +391,14 @@
                 });
                 html += `</div>`;
             } else {
-                html += `<div class="text-center py-20 bg-white rounded-[3rem] border-4 border-dashed border-slate-100 flex flex-col items-center gap-4">
-                    <i data-lucide="shopping-cart" class="w-12 h-12 text-slate-200"></i>
-                    <p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Carrito vacío</p>
-                </div>`;
+                html += `
+                    <div class="text-center py-24 bg-white rounded-[3rem] border-4 border-dashed border-slate-200 flex flex-col items-center">
+                        <div class="bg-slate-50 p-6 rounded-full mb-4">
+                            <i data-lucide="shopping-cart" class="w-12 h-12 text-slate-200"></i>
+                        </div>
+                        <p class="text-slate-400 font-black uppercase text-[10px] tracking-widest">Tu lista está vacía</p>
+                    </div>`;
             }
-            html += `</div>`;
             container.innerHTML = html;
         }
 
