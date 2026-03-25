@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Compras Interactiva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        .active-tab-blue { @apply bg-blue-600 text-white shadow-lg ring-2 ring-white ring-offset-2; }
+        .active-tab-purple { @apply bg-purple-600 text-white shadow-lg ring-2 ring-white ring-offset-2; }
+        .active-tab-amber { @apply bg-amber-500 text-white shadow-lg ring-2 ring-white ring-offset-2; }
+        .active-tab-rose { @apply bg-rose-600 text-white shadow-lg ring-2 ring-white ring-offset-2; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 pb-28 min-h-screen">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-emerald-600 text-white px-4 py-5 shadow-xl">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/25 p-2 rounded-2xl backdrop-blur-md border border-white/30">
+                    <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-tight leading-none uppercase">Mis Compras</h1>
+                    <p class="text-[10px] font-bold opacity-80 mt-1 uppercase tracking-widest">Panel de Control</p>
+                </div>
+            </div>
+            <button onclick="resetAll()" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-full transition-all active:rotate-180 duration-500">
+                <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </header>
+
+    <main id="app-content" class="max-w-md mx-auto px-4 mt-6">
+        <!-- El contenido se genera dinámicamente con JS -->
+    </main>
+
+    <!-- Navegación Persistente -->
+    <nav class="fixed bottom-8 left-6 right-6 max-w-md mx-auto z-50">
+        <div class="bg-slate-900/95 backdrop-blur-xl rounded-[2.5rem] p-2 flex gap-2 shadow-2xl border border-white/10 ring-1 ring-black/20">
+            <button id="nav-stores" onclick="switchView('stores')" class="flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-emerald-500 text-white shadow-inner scale-[1.03]">
+                <i data-lucide="store" class="w-4 h-4"></i>
+                TIENDAS
+            </button>
+            <button id="nav-summary" onclick="switchView('summary')" class="flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all text-slate-400 relative">
+                <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+                LISTA FINAL
+                <span id="badge-count" class="hidden absolute -top-1 right-6 bg-white text-slate-900 text-[10px] w-6 h-6 rounded-full flex items-center justify-center font-black shadow-lg ring-4 ring-slate-900">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        const INITIAL_DATA = {
+            "Restaurant Depot": [
+                "Pollo", "Carne Para tacos", "Cebolla Frescas", "Cilantro", "Perejil", "Limones", "Lechuga", "Ajos", "Jalapenos", 
+                "Platanos", "Costillas", "Papa Fritas", "Chorizo", "Aluminio", "Pimiento Verde", "Chile de Arbol", "Tortilla Maiz", 
+                "Tortilla n 12", "Tortillas Para Tacos N6", "Aceite Freidora", "Sour Cream", "Margarina", "Frijoles", "Mix Vegetales", 
+                "Tomate en Latas", "Maiz", "Pimiento Rojo diced", "Mayonesa", "Cajas Para LLevar", "Cubiertos Para LLevar", 
+                "Bolsas Para Basura", "Guantes", "Detergente", "Queso Mozarella", "Desengrasante", "Caldo de Pollo", "Sazon Azafran", 
+                "Container Para Salsas", "Bolsas Para Llevar", "Menta", "Queso Americano James", "Churros", "Sal", "Azucar",
+                "Pan Rayado", "Pan Hamburguesa", "Banana Peper", "Pimiento rojo entero", "Servilletas Para Barrluco", "Papel", 
+                "Fibra verde", "Piedra plancha", "Harina para pollo", "Arroz", "Pimienta", "Paprika", "Mostaza", "Oregano", 
+                "Adobo", "Albaca", "Comino", "Margarina Liquida", "Ketchup", "Red Bull Watermelon"
+            ],
+            "Sams Club": [
+                "Pan Chori y Lomo", "Bolsa Para llevar", "Arroz", "Agua", "Servilletas Para Bar", "Costillas", "Cloro", "Fabuloso", "Vaso Para Agua"
+            ],
+            "Walmart": [
+                "Jamon", "Coca", "Coca Diet", "Sirloni", "Lemonade", "Sprite", "Leche", "Fanta", "Ginger Ale", "Carne Molida Hamburguesa", 
+                "Carne Molida Para Empanadas", "Perejil", "Huevos", "Tomate", "Aguacate", "Milanesa", "Aceite Para Paella"
+            ],
+            "GFS Gordon": [
+                "Chorizos Paella", "Cebolla Picada", "Servilletas Para Bar", "Carne Asada", "Fish Tacos", "Platanos"
+            ]
+        };
+
+        const STORE_THEMES = {
+            "Restaurant Depot": { bg: "bg-blue-600", active: "bg-blue-600 text-white ring-blue-200 shadow-blue-200 shadow-lg ring-2 ring-white ring-offset-2" },
+            "Sams Club": { bg: "bg-purple-600", active: "bg-purple-600 text-white ring-purple-200 shadow-purple-200 shadow-lg ring-2 ring-white ring-offset-2" },
+            "Walmart": { bg: "bg-amber-500", active: "bg-amber-500 text-white ring-amber-200 shadow-amber-200 shadow-lg ring-2 ring-white ring-offset-2" },
+            "GFS Gordon": { bg: "bg-rose-600", active: "bg-rose-600 text-white ring-rose-200 shadow-rose-200 shadow-lg ring-2 ring-white ring-offset-2" }
+        };
+
+        // Estado Global
+        let state = {
+            quantities: JSON.parse(localStorage.getItem('shopping-quantities-html') || '{}'),
+            checked: JSON.parse(localStorage.getItem('shopping-checked-html') || '{}'),
+            activeStore: "Restaurant Depot",
+            searchTerm: "",
+            view: "stores" // 'stores' o 'summary'
+        };
+
+        function save() {
+            localStorage.setItem('shopping-quantities-html', JSON.stringify(state.quantities));
+            localStorage.setItem('shopping-checked-html', JSON.stringify(state.checked));
+            updateBadge();
+        }
+
+        function updateBadge() {
+            const count = Object.values(state.quantities).filter(q => q > 0).length;
+            const badge = document.getElementById('badge-count');
+            if (count > 0) {
+                badge.textContent = count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function resetAll() {
+            if(confirm("¿Estás seguro de borrar todos los datos?")) {
+                state.quantities = {};
+                state.checked = {};
+                save();
+                render();
+            }
+        }
+
+        function switchView(view) {
+            state.view = view;
+            const btnStores = document.getElementById('nav-stores');
+            const btnSummary = document.getElementById('nav-summary');
+
+            if (view === 'stores') {
+                btnStores.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-emerald-500 text-white shadow-inner scale-[1.03]";
+                btnSummary.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all text-slate-400 relative";
+            } else {
+                btnSummary.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-rose-500 text-white shadow-inner scale-[1.03] relative";
+                btnStores.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all text-slate-400";
+            }
+            render();
+        }
+
+        function updateQuantity(item, delta) {
+            const current = state.quantities[item] || 0;
+            const next = Math.max(0, current + delta);
+            if (next === 0) {
+                delete state.quantities[item];
+            } else {
+                state.quantities[item] = next;
+            }
+            save();
+            render();
+        }
+
+        function handleInput(item, value) {
+            const num = parseInt(value) || 0;
+            if (num <= 0) {
+                delete state.quantities[item];
+            } else {
+                state.quantities[item] = num;
+            }
+            save();
+            // No renderizar en cada tecla para no perder el foco, pero actualizar badge
+            updateBadge();
+        }
+
+        function toggleCheck(item) {
+            state.checked[item] = !state.checked[item];
+            save();
+            render();
+        }
+
+        function render() {
+            const container = document.getElementById('app-content');
+            
+            if (state.view === 'stores') {
+                renderStoresView(container);
+            } else {
+                renderSummaryView(container);
+            }
+            lucide.createIcons();
+        }
+
+        function renderStoresView(container) {
+            let html = `
+                <!-- Selector de Tiendas -->
+                <div class="flex overflow-x-auto gap-3 mb-6 no-scrollbar py-2">
+                    ${Object.keys(INITIAL_DATA).map(store => `
+                        <button onclick="state.activeStore='${store}'; render();" 
+                            class="flex-shrink-0 px-5 py-3 rounded-2xl text-[11px] font-black tracking-wider transition-all transform active:scale-90 ${state.activeStore === store ? STORE_THEMES[store].active : 'bg-white text-slate-500 border border-slate-200'}">
+                            ${store.toUpperCase()}
+                        </button>
+                    `).join('')}
+                </div>
+
+                <!-- Buscador -->
+                <div class="relative mb-8 group">
+                    <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                        <i data-lucide="search" class="text-slate-400 w-5 h-5"></i>
+                    </div>
+                    <input type="text" placeholder="Buscar en ${state.activeStore}..." 
+                        oninput="state.searchTerm = this.value; renderItemsOnly();"
+                        value="${state.searchTerm}"
+                        class="w-full pl-12 pr-4 py-4 bg-white border-2 border-transparent rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none shadow-sm transition-all font-semibold"
+                    />
+                </div>
+
+                <!-- Lista de Items -->
+                <div id="items-list" class="space-y-4">
+                    <!-- Se llena con renderItemsOnly -->
+                </div>
+            `;
+            container.innerHTML = html;
+            renderItemsOnly();
+        }
+
+        function renderItemsOnly() {
+            const listContainer = document.getElementById('items-list');
+            const items = INITIAL_DATA[state.activeStore].filter(i => i.toLowerCase().includes(state.searchTerm.toLowerCase()));
+            
+            if (items.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-20 text-slate-300">
+                        <i data-lucide="package" class="mx-auto mb-4 opacity-20 w-16 h-16"></i>
+                        <p class="font-bold">No se encontró el artículo</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            listContainer.innerHTML = items.map(item => {
+                const isChecked = state.checked[item];
+                const qty = state.quantities[item] || "";
+                return `
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between transition-all shadow-sm ${isChecked ? 'opacity-40 grayscale-[0.5]' : ''}">
+                        <div class="flex items-center gap-4 flex-1 min-w-0">
+                            <button onclick="toggleCheck('${item}')" 
+                                class="flex-shrink-0 w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all ${isChecked ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-200 bg-white'}">
+                                ${isChecked ? '<i data-lucide="check-circle-2" class="w-[18px] h-[18px]"></i>' : ''}
+                            </button>
+                            <span class="font-bold text-slate-700 truncate ${isChecked ? 'line-through' : ''}">${item}</span>
+                        </div>
+
+                        <div class="flex items-center gap-1 bg-slate-50 p-1.5 rounded-xl ml-4 border border-slate-100">
+                            <button onclick="updateQuantity('${item}', -1)" class="w-9 h-9 flex items-center justify-center text-rose-500 hover:bg-rose-50 rounded-lg transition-all active:scale-75">
+                                <i data-lucide="minus" class="w-[18px] h-[18px]"></i>
+                            </button>
+                            <input type="number" class="w-10 text-center bg-transparent font-black text-lg outline-none text-slate-800" 
+                                value="${qty}" placeholder="0" oninput="handleInput('${item}', this.value)" />
+                            <button onclick="updateQuantity('${item}', 1)" class="w-9 h-9 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all active:scale-75">
+                                <i data-lucide="plus" class="w-[18px] h-[18px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function renderSummaryView(container) {
+            const storesWithItems = Object.entries(INITIAL_DATA).filter(([store, items]) => 
+                items.some(item => state.quantities[item] > 0)
+            );
+
+            let html = `
+                <div class="animate-in fade-in duration-300">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-2xl font-black text-slate-800">Tu Carrito</h2>
+                        <div class="flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-1 rounded-full font-black text-sm">
+                            <i data-lucide="shopping-cart" class="w-[14px] h-[14px]"></i>
+                            ${Object.values(state.quantities).filter(q => q > 0).length} ITEMS
+                        </div>
+                    </div>
+            `;
+
+            if (storesWithItems.length > 0) {
+                html += `<div class="space-y-10">`;
+                storesWithItems.forEach(([store, items]) => {
+                    const selected = items.filter(i => state.quantities[i] > 0);
+                    html += `
+                        <div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-md">
+                            <div class="${STORE_THEMES[store].bg} px-8 py-4 flex justify-between items-center text-white">
+                                <span class="text-[10px] font-black tracking-[0.3em] uppercase">${store}</span>
+                            </div>
+                            <div class="p-3 space-y-1">
+                                ${selected.map(item => {
+                                    const isChecked = state.checked[item];
+                                    return `
+                                        <div onclick="toggleCheck('${item}')" class="px-5 py-4 flex items-center justify-between rounded-2xl cursor-pointer active:bg-slate-50 transition-all ${isChecked ? 'bg-slate-50' : 'bg-transparent'}">
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all ${isChecked ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-200'}">
+                                                    ${isChecked ? '<i data-lucide="check-circle-2" class="w-4 h-4"></i>' : ''}
+                                                </div>
+                                                <span class="font-bold text-slate-700 ${isChecked ? 'line-through opacity-40' : ''}">${item}</span>
+                                            </div>
+                                            <span class="bg-slate-800 text-white font-black w-9 h-9 flex items-center justify-center rounded-xl text-sm shadow-sm">
+                                                ${state.quantities[item]}
+                                            </span>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            } else {
+                html += `
+                    <div class="text-center py-20 bg-white rounded-[3rem] border-4 border-dashed border-slate-100">
+                        <i data-lucide="shopping-cart" class="mx-auto mb-4 text-slate-100 w-16 h-16"></i>
+                        <p class="text-slate-400 font-bold px-10 leading-tight text-lg">Tu lista está vacía.</p>
+                        <button onclick="switchView('stores')" class="mt-6 bg-emerald-500 text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-100">
+                            Ir a las tiendas
+                        </button>
+                    </div>
+                `;
+            }
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // Inicializar
+        window.onload = () => {
+            updateBadge();
+            render();
+        };
+    </script>
+</body>
+</html>
