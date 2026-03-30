@@ -45,11 +45,11 @@
                 </div>
                 <div>
                     <h1 class="text-lg font-black leading-none uppercase tracking-tight text-white">Logística App</h1>
-                    <p id="cloud-status" class="text-[9px] font-bold opacity-70 uppercase tracking-widest mt-1 text-white">Conectando...</p>
+                    <p class="text-[9px] font-bold opacity-70 uppercase tracking-widest mt-1 text-white">Modo Local (Privado)</p>
                 </div>
             </div>
             <div class="flex gap-1">
-                <button onclick="window.toggleCloudModal()" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-full transition-all" title="Sincronizar">
+                <button onclick="window.toggleCloudModal()" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-full transition-all" title="Transferir archivo">
                     <i data-lucide="share-2" class="w-5 h-5 text-white"></i>
                 </button>
                 <button onclick="window.copyToClipboard()" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-full transition-all" title="Copiar texto">
@@ -66,45 +66,30 @@
         <!-- Contenido generado por JS -->
     </main>
 
-    <!-- Modal de Transferencia -->
+    <!-- Modal de Transferencia por Archivo -->
     <div id="cloud-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 modal-overlay">
         <div class="bg-white rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl view-transition max-h-[90vh] overflow-y-auto no-scrollbar">
             <div class="bg-emerald-600 p-6 text-white flex justify-between items-center sticky top-0 z-10">
-                <h3 class="font-black uppercase text-sm tracking-widest">Transferir Lista</h3>
+                <h3 class="font-black uppercase text-sm tracking-widest text-white">Transferir por WhatsApp</h3>
                 <button onclick="window.toggleCloudModal()"><i data-lucide="x" class="w-5 h-5 text-white"></i></button>
             </div>
             
             <div class="p-6 space-y-8">
-                <!-- Opción A: Archivo -->
                 <div class="space-y-4">
-                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-2">Opción A: Por WhatsApp</h4>
+                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-2">Compartir Datos</h4>
                     <button onclick="window.exportDataFile()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-blue-100">
                         <i data-lucide="file-output" class="w-4 h-4 text-white"></i>
-                        Exportar para WhatsApp
+                        1. Exportar para WhatsApp
                     </button>
-                    <p class="text-[10px] text-center text-slate-500 px-4 italic leading-tight">Envía el archivo descargado. En el otro móvil dale a "Importar".</p>
+                    <p class="text-[10px] text-center text-slate-500 px-4 italic leading-tight text-balance">Se bajará un archivo. Envíalo al otro teléfono por WhatsApp.</p>
                     
-                    <label class="w-full bg-slate-100 text-slate-700 py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer border-2 border-dashed border-slate-300">
-                        <i data-lucide="file-input" class="w-4 h-4 text-slate-600"></i>
-                        Importar Archivo
-                        <input type="file" id="import-file" class="hidden" accept=".json" onchange="window.importDataFile(event)">
-                    </label>
-                </div>
-
-                <!-- Opción B: Nube -->
-                <div class="space-y-4 pt-4">
-                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-2">Opción B: Por Código (Nube)</h4>
-                    <button onclick="window.uploadToCloud()" class="w-full bg-emerald-500 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-emerald-100">
-                        <i data-lucide="cloud-upload" class="w-4 h-4 text-white"></i>
-                        Subir a la Nube
-                    </button>
-                    
-                    <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 space-y-3">
-                        <input type="text" id="input-sync-code" value="123456" placeholder="Código" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-emerald-500 text-center font-black tracking-widest uppercase text-sm">
-                        <button onclick="window.downloadFromCloud()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2">
-                            <i data-lucide="cloud-download" class="w-4 h-4 text-white"></i>
-                            Cargar de la Nube
-                        </button>
+                    <div class="pt-4">
+                        <label class="w-full bg-slate-100 text-slate-700 py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer border-2 border-dashed border-slate-300">
+                            <i data-lucide="file-input" class="w-4 h-4 text-slate-600"></i>
+                            2. Importar Archivo
+                            <input type="file" id="import-file" class="hidden" accept=".json" onchange="window.importDataFile(event)">
+                        </label>
+                        <p class="text-[10px] text-center text-slate-400 mt-2">Usa esto en el teléfono que recibe el archivo.</p>
                     </div>
                 </div>
             </div>
@@ -133,31 +118,8 @@
         </button>
     </div>
 
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-        import { getAuth, signInAnonymously, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
-
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : '123456';
-
-        async function initAuth() {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                document.getElementById('cloud-status').innerText = 'En Línea';
-            } catch (error) {
-                document.getElementById('cloud-status').innerText = 'Sin Nube';
-            }
-        }
-        initAuth();
-
+    <script>
+        // Datos de la aplicación
         const INITIAL_DATA = {
             "Restaurant Depot": {
                 "Carnes": ["Pollo", "Carne Tacos", "Costillas", "Chorizo", "Caldo Pollo"],
@@ -197,100 +159,43 @@
             "GFS Gordon": "bg-rose-600"
         };
 
-        // Ponemos el estado en window para que sea accesible desde los onclick inline
+        // Estado global único
         window.state = {
-            quantities: JSON.parse(localStorage.getItem('rest-q-v10') || '{}'),
-            checked: JSON.parse(localStorage.getItem('rest-c-v10') || '{}'),
+            quantities: JSON.parse(localStorage.getItem('rest-q-v12') || '{}'),
+            checked: JSON.parse(localStorage.getItem('rest-c-v12') || '{}'),
             activeStore: "Restaurant Depot",
             searchTerm: "",
             view: "stores"
         };
 
-        // --- ASIGNACIÓN GLOBAL ---
+        // --- FUNCIONES DE PERSISTENCIA ---
         window.save = () => {
-            localStorage.setItem('rest-q-v10', JSON.stringify(window.state.quantities));
-            localStorage.setItem('rest-c-v10', JSON.stringify(window.state.checked));
+            localStorage.setItem('rest-q-v12', JSON.stringify(window.state.quantities));
+            localStorage.setItem('rest-c-v12', JSON.stringify(window.state.checked));
             window.updateBadge();
         };
 
         window.updateBadge = () => {
             const count = Object.values(window.state.quantities).filter(q => q > 0).length;
             const badge = document.getElementById('badge-count');
-            if (count > 0) {
-                badge.textContent = count;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
+            if (badge) {
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
             }
         };
 
+        // --- FUNCIONES DE INTERFAZ ---
         window.toggleCloudModal = () => {
-            document.getElementById('cloud-modal').classList.toggle('hidden');
-        };
-
-        window.exportDataFile = () => {
-            const data = { quantities: window.state.quantities, checked: window.state.checked };
-            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `LOGISTICA_${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
-        };
-
-        window.importDataFile = (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.quantities) {
-                        window.state.quantities = data.quantities;
-                        window.state.checked = data.checked || {};
-                        window.save();
-                        window.render();
-                        alert("¡Datos importados!");
-                        window.toggleCloudModal();
-                    }
-                } catch (err) { alert("Archivo inválido"); }
-            };
-            reader.readAsText(file);
-        };
-
-        window.uploadToCloud = async () => {
-            if (!auth.currentUser) return alert("Error de conexión");
-            const code = document.getElementById('input-sync-code').value.trim() || "123456";
-            const listRef = doc(db, 'artifacts', appId, 'public', 'data', 'cloud_lists', code);
-            try {
-                await setDoc(listRef, {
-                    quantities: window.state.quantities,
-                    checked: window.state.checked,
-                    updatedAt: new Date().getTime()
-                });
-                alert("¡Guardado en la nube con código " + code + "!");
-            } catch (e) { alert("Error al subir"); }
-        };
-
-        window.downloadFromCloud = async () => {
-            const code = document.getElementById('input-sync-code').value.trim() || "123456";
-            const listRef = doc(db, 'artifacts', appId, 'public', 'data', 'cloud_lists', code);
-            try {
-                const snap = await getDoc(listRef);
-                if (snap.exists()) {
-                    const data = snap.data();
-                    window.state.quantities = data.quantities || {};
-                    window.state.checked = data.checked || {};
-                    window.save();
-                    window.render();
-                    window.toggleCloudModal();
-                    alert("¡Lista cargada!");
-                } else { alert("Código no encontrado"); }
-            } catch (e) { alert("Error al descargar"); }
+            const modal = document.getElementById('cloud-modal');
+            if (modal) modal.classList.toggle('hidden');
         };
 
         window.resetAll = () => {
-            if (confirm("¿Borrar todo?")) {
+            if (confirm("¿Seguro que quieres borrar todas las cantidades y marcas?")) {
                 window.state.quantities = {};
                 window.state.checked = {};
                 window.save();
@@ -307,11 +212,11 @@
             if (view === 'stores') {
                 btnStores.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-emerald-500 text-white shadow-lg";
                 btnSummary.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all text-slate-400 relative";
-                downloadBtn.classList.add('hidden');
+                if (downloadBtn) downloadBtn.classList.add('hidden');
             } else {
                 btnSummary.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-emerald-500 text-white shadow-lg relative";
                 btnStores.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all text-slate-400";
-                downloadBtn.classList.remove('hidden');
+                if (downloadBtn) downloadBtn.classList.remove('hidden');
             }
             window.render();
         };
@@ -336,6 +241,38 @@
             window.state.checked[item] = !window.state.checked[item];
             window.save();
             window.render();
+        };
+
+        // --- FUNCIONES DE EXPORTACIÓN ---
+        window.exportDataFile = () => {
+            const data = { quantities: window.state.quantities, checked: window.state.checked };
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `LISTA_COMPRAS_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            window.toggleCloudModal();
+        };
+
+        window.importDataFile = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.quantities) {
+                        window.state.quantities = data.quantities;
+                        window.state.checked = data.checked || {};
+                        window.save();
+                        window.render();
+                        alert("¡Datos importados con éxito!");
+                        window.toggleCloudModal();
+                    }
+                } catch (err) { alert("Archivo no válido."); }
+            };
+            reader.readAsText(file);
         };
 
         window.copyToClipboard = () => {
@@ -363,7 +300,7 @@
         };
 
         window.downloadList = () => {
-            let text = `RESUMEN - ${new Date().toLocaleDateString()}\n\n`;
+            let text = `RESUMEN DE COMPRA - ${new Date().toLocaleDateString()}\n\n`;
             for (const [store, categories] of Object.entries(INITIAL_DATA)) {
                 let sHas = false;
                 let sTxt = `${store.toUpperCase()}\n`;
@@ -380,38 +317,39 @@
             const blob = new Blob([text], { type: 'text/plain' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `resumen_compras.txt`;
+            a.download = `resumen_lectura.txt`;
             a.click();
         };
 
+        // --- RENDERIZADO ---
         window.render = () => {
             const container = document.getElementById('app-content');
             if (!container) return;
             container.className = "max-w-md mx-auto px-4 mt-6 mb-10 view-transition";
-            if (window.state.view === 'stores') renderStoresView(container);
-            else renderSummaryView(container);
+            
+            if (window.state.view === 'stores') {
+                container.innerHTML = `
+                    <div class="flex overflow-x-auto gap-3 mb-6 no-scrollbar py-2 sticky top-[76px] z-30 bg-slate-50">
+                        ${Object.keys(INITIAL_DATA).map(store => `
+                            <button onclick="window.state.activeStore='${store}'; window.render();" 
+                                class="flex-shrink-0 px-6 py-3 rounded-2xl text-[10px] font-black tracking-widest transition-all ${window.state.activeStore === store ? STORE_THEMES[store] + ' text-white shadow-lg ring-2 ring-white ring-offset-2' : 'bg-white text-slate-500 border border-slate-200'}">
+                                ${store.toUpperCase()}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div class="relative mb-6 sticky top-[138px] z-30 bg-slate-50 pb-2">
+                        <i data-lucide="search" class="absolute left-4 top-4 text-slate-400 w-5 h-5"></i>
+                        <input type="text" placeholder="Buscar producto..." oninput="window.state.searchTerm = this.value; window.renderItemsOnly();" value="${window.state.searchTerm}"
+                            class="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-100 rounded-2xl outline-none shadow-sm font-bold text-sm" />
+                    </div>
+                    <div id="items-list" class="space-y-8"></div>
+                `;
+                window.renderItemsOnly();
+            } else {
+                renderSummaryView(container);
+            }
             lucide.createIcons();
         };
-
-        function renderStoresView(container) {
-            container.innerHTML = `
-                <div class="flex overflow-x-auto gap-3 mb-6 no-scrollbar py-2 sticky top-[76px] z-30 bg-slate-50">
-                    ${Object.keys(INITIAL_DATA).map(store => `
-                        <button onclick="window.state.activeStore='${store}'; window.render();" 
-                            class="flex-shrink-0 px-6 py-3 rounded-2xl text-[10px] font-black tracking-widest transition-all ${window.state.activeStore === store ? STORE_THEMES[store] + ' text-white shadow-lg ring-2 ring-white ring-offset-2' : 'bg-white text-slate-500 border border-slate-200'}">
-                            ${store.toUpperCase()}
-                        </button>
-                    `).join('')}
-                </div>
-                <div class="relative mb-6 sticky top-[138px] z-30 bg-slate-50 pb-2">
-                    <i data-lucide="search" class="absolute left-4 top-4 text-slate-400 w-5 h-5"></i>
-                    <input type="text" placeholder="Buscar..." oninput="window.state.searchTerm = this.value; window.renderItemsOnly();" value="${window.state.searchTerm}"
-                        class="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-100 rounded-2xl outline-none shadow-sm font-bold text-sm" />
-                </div>
-                <div id="items-list" class="space-y-8"></div>
-            `;
-            window.renderItemsOnly();
-        }
 
         window.renderItemsOnly = () => {
             const listContainer = document.getElementById('items-list');
@@ -425,21 +363,21 @@
                     html += filtered.map(item => `
                         <div class="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between shadow-sm ${window.state.checked[item] ? 'opacity-40 grayscale' : ''}">
                             <div class="flex items-center gap-4 flex-1 min-w-0" onclick="window.toggleCheck('${item}')">
-                                <button class="flex-shrink-0 w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all ${window.state.checked[item] ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-200 bg-white'}">
+                                <button class="flex-shrink-0 w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all ${window.state.checked[item] ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : 'border-slate-200 bg-white'}">
                                     ${window.state.checked[item] ? '<i data-lucide="check" class="w-5 h-5 text-white"></i>' : ''}
                                 </button>
                                 <span class="font-bold text-slate-700 truncate ${window.state.checked[item] ? 'line-through' : ''}">${item}</span>
                             </div>
                             <div class="flex items-center gap-1 bg-slate-50 p-1 rounded-xl ml-4 border border-slate-100">
-                                <button onclick="window.updateQuantity('${item}', -1)" class="w-9 h-9 flex items-center justify-center text-rose-500"><i data-lucide="minus" class="w-4 h-4"></i></button>
+                                <button onclick="window.updateQuantity('${item}', -1)" class="w-9 h-9 flex items-center justify-center text-rose-500 active:bg-rose-100 rounded-lg transition-all active:scale-75"><i data-lucide="minus" class="w-4 h-4"></i></button>
                                 <input type="number" class="w-10 text-center bg-transparent font-black text-lg outline-none" value="${window.state.quantities[item] || ""}" placeholder="0" oninput="window.handleInput('${item}', this.value)" />
-                                <button onclick="window.updateQuantity('${item}', 1)" class="w-9 h-9 flex items-center justify-center text-emerald-600"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                                <button onclick="window.updateQuantity('${item}', 1)" class="w-9 h-9 flex items-center justify-center text-emerald-600 active:bg-emerald-100 rounded-lg transition-all active:scale-75"><i data-lucide="plus" class="w-4 h-4"></i></button>
                             </div>
                         </div>`).join('');
                     html += `</div></div>`;
                 }
             }
-            listContainer.innerHTML = html || `<div class="text-center py-20 text-slate-300 font-bold uppercase tracking-widest text-[10px]">Vacío</div>`;
+            listContainer.innerHTML = html || `<div class="text-center py-20 text-slate-300 font-bold uppercase tracking-widest text-[10px]">No hay productos</div>`;
             lucide.createIcons();
         };
 
@@ -448,12 +386,13 @@
             for (const [store, categories] of Object.entries(INITIAL_DATA)) {
                 const sItems = [];
                 for (const [cat, items] of Object.entries(categories)) {
-                    const sel = items.filter(i => window.state.quantities[i] > 0);
-                    if (sel.length > 0) sItems.push({ cat, items: sel });
+                    const sel = window.state.quantities[item = items.find(it => window.state.quantities[it] > 0)] || items.filter(i => window.state.quantities[i] > 0);
+                    const selectedItems = items.filter(i => window.state.quantities[i] > 0);
+                    if (selectedItems.length > 0) sItems.push({ cat, items: selectedItems });
                 }
                 if (sItems.length > 0) summaryData.push({ store, categories: sItems });
             }
-            let html = `<div class="mb-8"><h2 class="text-3xl font-black text-slate-800 tracking-tighter">Resumen</h2></div>`;
+            let html = `<div class="mb-8"><h2 class="text-3xl font-black text-slate-800 tracking-tighter">Resumen de Compra</h2></div>`;
             if (summaryData.length > 0) {
                 html += `<div class="space-y-10 pb-10">`;
                 summaryData.forEach(s => {
@@ -471,7 +410,7 @@
                                     </div>`).join('')}</div></div>`).join('')}</div></div>`;
                 });
                 html += `</div>`;
-            } else { html += `<div class="text-center py-24 bg-white rounded-[3rem] border-4 border-dashed border-slate-200 font-bold text-slate-400">LISTA VACÍA</div>`; }
+            } else { html += `<div class="text-center py-24 bg-white rounded-[3rem] border-4 border-dashed border-slate-200 font-bold text-slate-400">LA LISTA ESTÁ VACÍA</div>`; }
             container.innerHTML = html;
         }
 
