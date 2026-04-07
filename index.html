@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mi Lista de Suministros</title>
+    <title>Barroluco Compras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -44,8 +44,8 @@
                     <i data-lucide="shopping-cart" class="w-6 h-6 text-white"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg font-black leading-none uppercase tracking-tight text-white">Logística App</h1>
-                    <p class="text-[9px] font-bold opacity-70 uppercase tracking-widest mt-1 text-white">Modo Local (Privado)</p>
+                    <h1 class="text-lg font-black leading-none uppercase tracking-tight text-white">Barroluco Compras</h1>
+                    <p id="cloud-status" class="text-[9px] font-bold opacity-70 uppercase tracking-widest mt-1 text-white">Personalizable</p>
                 </div>
             </div>
             <div class="flex gap-1">
@@ -74,14 +74,14 @@
                 <button onclick="window.toggleCloudModal()"><i data-lucide="x" class="w-5 h-5 text-white"></i></button>
             </div>
             
-            <div class="p-6 space-y-8">
+            <div class="p-6 space-y-8 text-black">
                 <div class="space-y-4">
                     <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-2">Compartir Datos</h4>
                     <button onclick="window.exportDataFile()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-blue-100">
                         <i data-lucide="file-output" class="w-4 h-4 text-white"></i>
                         1. Exportar para WhatsApp
                     </button>
-                    <p class="text-[10px] text-center text-slate-500 px-4 italic leading-tight text-balance">Se bajará un archivo. Envíalo al otro teléfono por WhatsApp.</p>
+                    <p class="text-[10px] text-center text-slate-500 px-4 italic leading-tight text-balance">Se bajará un archivo con tus productos y cantidades.</p>
                     
                     <div class="pt-4">
                         <label class="w-full bg-slate-100 text-slate-700 py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer border-2 border-dashed border-slate-300">
@@ -89,7 +89,6 @@
                             2. Importar Archivo
                             <input type="file" id="import-file" class="hidden" accept=".json" onchange="window.importDataFile(event)">
                         </label>
-                        <p class="text-[10px] text-center text-slate-400 mt-2">Usa esto en el teléfono que recibe el archivo.</p>
                     </div>
                 </div>
             </div>
@@ -119,35 +118,35 @@
     </div>
 
     <script>
-        // Datos de la aplicación
-        const INITIAL_DATA = {
+        // Catálogo base por si se reinicia la memoria
+        const DEFAULT_CATALOG = {
             "Restaurant Depot": {
                 "Carnes": ["Pollo", "Carne Tacos", "Costillas", "Chorizo", "Caldo Pollo"],
-                "Vegetales": ["Cebolla", "Cilantro", "Perejil", "Lechuga", "Ajos", "Jalapeños", "Plátanos", "Pimiento Verde", "Chile Árbol", "Mix Vegetales", "Maíz", "Pimiento Diced", "Pimiento Rojo", "Albahaca", "Orégano", "Menta"],
+                "Vegetales": ["Cebolla", "Cilantro", "Perejil", "Limones", "Lechuga", "Ajos", "Jalapeños", "Plátanos", "Pimiento Verde", "Chile Árbol", "Mix Vegetales", "Maíz", "Pimiento Diced", "Pimiento Rojo", "Banana Pepper", "Menta", "Albahaca", "Orégano"],
                 "Lácteos y Frío": ["Sour Cream", "Margarina", "Queso Mozzarella", "Queso James", "Marg. Líquida", "Mayonesa"],
-                "Abarrotes": ["Frijoles", "Tomate Lata", "Arroz", "Sal", "Azúcar", "Pan Rayado", "Pan Burger", "Harina Pollo", "Sazón Azafrán", "Pimienta", "Paprika", "Mostaza", "Adobo", "Comino", "Ketchup", "Banana Pepper"],
+                "Abarrotes y Especias": ["Frijoles", "Tomate Lata", "Arroz", "Sal", "Azúcar", "Pan Rayado", "Pan Burger", "Harina Pollo", "Sazón Azafrán", "Pimienta", "Paprika", "Mostaza", "Adobo", "Comino", "Ketchup"],
                 "Congelados": ["Papas Fritas", "Tortilla Maíz", "Tortilla n12", "Tortillas N6", "Churros"],
                 "Bebidas": ["Red Bull Watermelon", "Red Bull Sugar Free"],
-                "Insumos": ["Aluminio", "Cajas Q1", "Cajas G1", "Cajas 206", "Cubiertos", "Bolsas Basura", "Guantes", "Detergente", "Desengrasante", "Potes Salsa", "Bolsas Llevar", "Limones", "Papel", "Fibra verde", "Piedra plancha", "Servilletas B", "Aceite Freír"]
+                "Insumos y Limpieza": ["Aluminio", "Cajas Q1", "Cajas G1", "Cajas 206", "Cubiertos", "Bolsas Basura", "Guantes", "Detergente", "Desengrasante", "Potes Salsa", "Bolsas Llevar", "Papel", "Fibra verde", "Piedra plancha", "Servilletas B", "Aceite Freír"]
             },
             "Sams Club": {
                 "Panadería": ["Pan Lomo", "Pan Chori"],
+                "Carnes": ["Costillas", "Chorizo"],
                 "Abarrotes": ["Arroz"],
                 "Bebidas": ["Agua", "Red Bull"],
-                "Carnes": ["Costillas"],
                 "Limpieza": ["Cloro", "Fabuloso"],
                 "Empaque": ["Bolsas Llevar", "Servilletas Bar", "Vasos Agua"]
             },
             "Walmart": {
                 "Carnes": ["Jamón", "Sirloni", "Carne Hamb.", "Carne Empan.", "Milanesa"],
-                "Bebidas": ["Coca", "Coca Diet", "Lemonade", "Sprite", "Fanta", "Ginger Ale", "Michelob Ultra", "Heineken", "Sweet Tea", "Unsweet Tea"],
+                "Bebidas": ["Coca", "Coca Diet", "Lemonade", "Sprite", "Fanta", "Ginger Ale", "Michelob Ultra", "Heineken", "Sweet Tea", "Unsweet Tea", "High Noon"],
                 "Lácteos": ["Leche", "Huevos"],
                 "Vegetales": ["Perejil", "Tomate", "Aguacate"],
                 "Otros": ["Aceite Paella"]
             },
             "GFS Gordon": {
                 "Carnes": ["Chorizos Paella", "Carne Asada", "Fish Tacos"],
-                "Vegetales": ["Cebolla", "Plátanos"],
+                "Vegetales": ["Cebolla Picada", "Plátanos"],
                 "Empaque": ["Servilletas Bar"]
             }
         };
@@ -159,10 +158,11 @@
             "GFS Gordon": "bg-rose-600"
         };
 
-        // Estado global único
+        // Estado global único con catálogo editable
         window.state = {
-            quantities: JSON.parse(localStorage.getItem('rest-q-v12') || '{}'),
-            checked: JSON.parse(localStorage.getItem('rest-c-v12') || '{}'),
+            catalog: JSON.parse(localStorage.getItem('barroluco-catalog-v15') || JSON.stringify(DEFAULT_CATALOG)),
+            quantities: JSON.parse(localStorage.getItem('barroluco-q-v15') || '{}'),
+            checked: JSON.parse(localStorage.getItem('barroluco-c-v15') || '{}'),
             activeStore: "Restaurant Depot",
             searchTerm: "",
             view: "stores"
@@ -170,8 +170,9 @@
 
         // --- FUNCIONES DE PERSISTENCIA ---
         window.save = () => {
-            localStorage.setItem('rest-q-v12', JSON.stringify(window.state.quantities));
-            localStorage.setItem('rest-c-v12', JSON.stringify(window.state.checked));
+            localStorage.setItem('barroluco-catalog-v15', JSON.stringify(window.state.catalog));
+            localStorage.setItem('barroluco-q-v15', JSON.stringify(window.state.quantities));
+            localStorage.setItem('barroluco-c-v15', JSON.stringify(window.state.checked));
             window.updateBadge();
         };
 
@@ -188,6 +189,32 @@
             }
         };
 
+        // --- FUNCIONES DE CATALOGO (Agregar / Quitar) ---
+        window.addNewProduct = (category) => {
+            const name = prompt(`Nuevo producto en ${category}:`);
+            if (name && name.trim() !== "") {
+                const cleanedName = name.trim();
+                if (!window.state.catalog[window.state.activeStore][category].includes(cleanedName)) {
+                    window.state.catalog[window.state.activeStore][category].push(cleanedName);
+                    window.save();
+                    window.render();
+                } else {
+                    alert("Este producto ya existe.");
+                }
+            }
+        };
+
+        window.removeProduct = (category, product) => {
+            if (confirm(`¿Quitar "${product}" de la lista permanente?`)) {
+                window.state.catalog[window.state.activeStore][category] = 
+                    window.state.catalog[window.state.activeStore][category].filter(p => p !== product);
+                delete window.state.quantities[product];
+                delete window.state.checked[product];
+                window.save();
+                window.render();
+            }
+        };
+
         // --- FUNCIONES DE INTERFAZ ---
         window.toggleCloudModal = () => {
             const modal = document.getElementById('cloud-modal');
@@ -195,7 +222,7 @@
         };
 
         window.resetAll = () => {
-            if (confirm("¿Seguro que quieres borrar todas las cantidades y marcas?")) {
+            if (confirm("¿Borrar cantidades? (Esto NO borra los productos nuevos que añadiste)")) {
                 window.state.quantities = {};
                 window.state.checked = {};
                 window.save();
@@ -245,12 +272,16 @@
 
         // --- FUNCIONES DE EXPORTACIÓN ---
         window.exportDataFile = () => {
-            const data = { quantities: window.state.quantities, checked: window.state.checked };
+            const data = { 
+                catalog: window.state.catalog, 
+                quantities: window.state.quantities, 
+                checked: window.state.checked 
+            };
             const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `LISTA_COMPRAS_${new Date().toISOString().slice(0,10)}.json`;
+            a.download = `BARROLUCO_DATOS_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
             window.toggleCloudModal();
         };
@@ -262,22 +293,21 @@
             reader.onload = (e) => {
                 try {
                     const data = JSON.parse(e.target.result);
-                    if (data.quantities) {
-                        window.state.quantities = data.quantities;
-                        window.state.checked = data.checked || {};
-                        window.save();
-                        window.render();
-                        alert("¡Datos importados con éxito!");
-                        window.toggleCloudModal();
-                    }
+                    if (data.catalog) window.state.catalog = data.catalog;
+                    if (data.quantities) window.state.quantities = data.quantities;
+                    if (data.checked) window.state.checked = data.checked;
+                    window.save();
+                    window.render();
+                    alert("¡Datos importados con éxito!");
+                    window.toggleCloudModal();
                 } catch (err) { alert("Archivo no válido."); }
             };
             reader.readAsText(file);
         };
 
         window.copyToClipboard = () => {
-            let text = `LISTA DE COMPRAS - ${new Date().toLocaleDateString()}\n\n`;
-            for (const [store, categories] of Object.entries(INITIAL_DATA)) {
+            let text = `BARROLUCO COMPRAS - ${new Date().toLocaleDateString()}\n\n`;
+            for (const [store, categories] of Object.entries(window.state.catalog)) {
                 let sHas = false;
                 let sTxt = `${store.toUpperCase()}\n`;
                 for (const [cat, items] of Object.entries(categories)) {
@@ -300,8 +330,8 @@
         };
 
         window.downloadList = () => {
-            let text = `RESUMEN DE COMPRA - ${new Date().toLocaleDateString()}\n\n`;
-            for (const [store, categories] of Object.entries(INITIAL_DATA)) {
+            let text = `BARROLUCO - RESUMEN DE COMPRA - ${new Date().toLocaleDateString()}\n\n`;
+            for (const [store, categories] of Object.entries(window.state.catalog)) {
                 let sHas = false;
                 let sTxt = `${store.toUpperCase()}\n`;
                 for (const [cat, items] of Object.entries(categories)) {
@@ -317,7 +347,7 @@
             const blob = new Blob([text], { type: 'text/plain' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `resumen_lectura.txt`;
+            a.download = `resumen_compras_barroluco.txt`;
             a.click();
         };
 
@@ -330,7 +360,7 @@
             if (window.state.view === 'stores') {
                 container.innerHTML = `
                     <div class="flex overflow-x-auto gap-3 mb-6 no-scrollbar py-2 sticky top-[76px] z-30 bg-slate-50">
-                        ${Object.keys(INITIAL_DATA).map(store => `
+                        ${Object.keys(window.state.catalog).map(store => `
                             <button onclick="window.state.activeStore='${store}'; window.render();" 
                                 class="flex-shrink-0 px-6 py-3 rounded-2xl text-[10px] font-black tracking-widest transition-all ${window.state.activeStore === store ? STORE_THEMES[store] + ' text-white shadow-lg ring-2 ring-white ring-offset-2' : 'bg-white text-slate-500 border border-slate-200'}">
                                 ${store.toUpperCase()}
@@ -340,7 +370,7 @@
                     <div class="relative mb-6 sticky top-[138px] z-30 bg-slate-50 pb-2">
                         <i data-lucide="search" class="absolute left-4 top-4 text-slate-400 w-5 h-5"></i>
                         <input type="text" placeholder="Buscar producto..." oninput="window.state.searchTerm = this.value; window.renderItemsOnly();" value="${window.state.searchTerm}"
-                            class="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-100 rounded-2xl outline-none shadow-sm font-bold text-sm" />
+                            class="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-100 rounded-2xl outline-none shadow-sm font-bold text-sm text-black" />
                     </div>
                     <div id="items-list" class="space-y-8"></div>
                 `;
@@ -354,12 +384,23 @@
         window.renderItemsOnly = () => {
             const listContainer = document.getElementById('items-list');
             if (!listContainer) return;
-            const categories = INITIAL_DATA[window.state.activeStore];
+            const categories = window.state.catalog[window.state.activeStore];
             let html = '';
             for (const [catName, items] of Object.entries(categories)) {
                 const filtered = items.filter(i => i.toLowerCase().includes(window.state.searchTerm.toLowerCase()));
+                
+                html += `
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center pl-2 pr-1">
+                            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${catName}</h3>
+                            <button onclick="window.addNewProduct('${catName}')" class="bg-emerald-100 text-emerald-700 p-1.5 rounded-lg active:scale-90 transition-transform">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-3">
+                `;
+
                 if (filtered.length > 0) {
-                    html += `<div class="space-y-4"><h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">${catName}</h3><div class="space-y-3">`;
                     html += filtered.map(item => `
                         <div class="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between shadow-sm ${window.state.checked[item] ? 'opacity-40 grayscale' : ''}">
                             <div class="flex items-center gap-4 flex-1 min-w-0" onclick="window.toggleCheck('${item}')">
@@ -368,45 +409,51 @@
                                 </button>
                                 <span class="font-bold text-slate-700 truncate ${window.state.checked[item] ? 'line-through' : ''}">${item}</span>
                             </div>
-                            <div class="flex items-center gap-1 bg-slate-50 p-1 rounded-xl ml-4 border border-slate-100">
-                                <button onclick="window.updateQuantity('${item}', -1)" class="w-9 h-9 flex items-center justify-center text-rose-500 active:bg-rose-100 rounded-lg transition-all active:scale-75"><i data-lucide="minus" class="w-4 h-4"></i></button>
-                                <input type="number" class="w-10 text-center bg-transparent font-black text-lg outline-none" value="${window.state.quantities[item] || ""}" placeholder="0" oninput="window.handleInput('${item}', this.value)" />
-                                <button onclick="window.updateQuantity('${item}', 1)" class="w-9 h-9 flex items-center justify-center text-emerald-600 active:bg-emerald-100 rounded-lg transition-all active:scale-75"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                            <div class="flex items-center gap-2 ml-4">
+                                <div class="flex items-center gap-1 bg-slate-50 p-1 rounded-xl border border-slate-100 text-black">
+                                    <button onclick="window.updateQuantity('${item}', -1)" class="w-9 h-9 flex items-center justify-center text-rose-500 active:bg-rose-100 rounded-lg transition-all active:scale-75"><i data-lucide="minus" class="w-4 h-4 text-black"></i></button>
+                                    <input type="number" class="w-10 text-center bg-transparent font-black text-lg outline-none text-black" value="${window.state.quantities[item] || ""}" placeholder="0" oninput="window.handleInput('${item}', this.value)" />
+                                    <button onclick="window.updateQuantity('${item}', 1)" class="w-9 h-9 flex items-center justify-center text-emerald-600 active:bg-emerald-100 rounded-lg transition-all active:scale-75"><i data-lucide="plus" class="w-4 h-4 text-black"></i></button>
+                                </div>
+                                <button onclick="window.removeProduct('${catName}', '${item}')" class="p-2 text-slate-300 hover:text-rose-500">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
                             </div>
                         </div>`).join('');
-                    html += `</div></div>`;
+                } else {
+                    html += `<div class="text-center py-4 text-slate-300 text-[10px] font-bold uppercase italic">Sin coincidencias</div>`;
                 }
+                html += `</div></div>`;
             }
-            listContainer.innerHTML = html || `<div class="text-center py-20 text-slate-300 font-bold uppercase tracking-widest text-[10px]">No hay productos</div>`;
+            listContainer.innerHTML = html;
             lucide.createIcons();
         };
 
         function renderSummaryView(container) {
             const summaryData = [];
-            for (const [store, categories] of Object.entries(INITIAL_DATA)) {
+            for (const [store, categories] of Object.entries(window.state.catalog)) {
                 const sItems = [];
                 for (const [cat, items] of Object.entries(categories)) {
-                    const sel = window.state.quantities[item = items.find(it => window.state.quantities[it] > 0)] || items.filter(i => window.state.quantities[i] > 0);
                     const selectedItems = items.filter(i => window.state.quantities[i] > 0);
                     if (selectedItems.length > 0) sItems.push({ cat, items: selectedItems });
                 }
                 if (sItems.length > 0) summaryData.push({ store, categories: sItems });
             }
-            let html = `<div class="mb-8"><h2 class="text-3xl font-black text-slate-800 tracking-tighter">Resumen de Compra</h2></div>`;
+            let html = `<div class="mb-8 text-black"><h2 class="text-3xl font-black tracking-tighter">Resumen Barroluco</h2></div>`;
             if (summaryData.length > 0) {
-                html += `<div class="space-y-10 pb-10">`;
+                html += `<div class="space-y-10 pb-10 text-black">`;
                 summaryData.forEach(s => {
-                    html += `<div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-xl">
+                    html += `<div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-xl text-black">
                         <div class="${STORE_THEMES[s.store]} px-8 py-5 text-white flex justify-between items-center"><span class="text-[11px] font-black tracking-[0.3em] uppercase text-white">${s.store}</span></div>
-                        <div class="p-6 space-y-8">${s.categories.map(c => `
-                            <div class="space-y-3"><h4 class="text-[9px] font-black text-slate-300 uppercase tracking-widest border-b pb-1">${c.cat}</h4>
-                                <div class="space-y-1">${c.items.map(item => `
+                        <div class="p-6 space-y-8 text-black">${s.categories.map(c => `
+                            <div class="space-y-3 text-black"><h4 class="text-[9px] font-black text-slate-300 uppercase tracking-widest border-b pb-1 text-black">${c.cat}</h4>
+                                <div class="space-y-1 text-black">${c.items.map(item => `
                                     <div onclick="window.toggleCheck('${item}')" class="py-3 flex items-center justify-between transition-all ${window.state.checked[item] ? 'opacity-30 grayscale' : ''}">
-                                        <div class="flex items-center gap-4">
+                                        <div class="flex items-center gap-4 text-black">
                                             <div class="w-7 h-7 rounded-lg border-2 flex items-center justify-center ${window.state.checked[item] ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-200'}">
                                                 ${window.state.checked[item] ? '<i data-lucide="check" class="w-4 h-4 text-white"></i>' : ''}</div>
                                             <span class="font-bold text-sm text-slate-700 ${window.state.checked[item] ? 'line-through' : ''}">${item}</span></div>
-                                        <span class="bg-slate-900 text-white font-black w-10 h-10 flex items-center justify-center rounded-2xl text-xs ring-4 ring-slate-50">${window.state.quantities[item]}</span>
+                                        <span class="bg-slate-900 text-white font-black w-10 h-10 flex items-center justify-center rounded-2xl text-xs ring-4 ring-slate-50 text-black">${window.state.quantities[item]}</span>
                                     </div>`).join('')}</div></div>`).join('')}</div></div>`;
                 });
                 html += `</div>`;
