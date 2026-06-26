@@ -5,7 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Barroluco Compras</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sand: '#FAF3E7',
+                        coral: { 50: '#FCEEE8', 100: '#F8DBCB', 200: '#F0B595', 500: '#E8714A', 600: '#D35F3A', 700: '#B14B2C' },
+                        turquoise: { 50: '#EAF6F4', 100: '#CCEBE7', 500: '#2A9D8F', 600: '#23857A', 700: '#1C6D63' },
+                        gold: { 100: '#F3E3C4', 500: '#C8943D', 600: '#AD7C2F' },
+                        deepteal: { 500: '#2F5D62', 600: '#264653', 700: '#1D363F', 900: '#142328' }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         
@@ -34,10 +49,10 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 pb-32 min-h-screen select-none">
+<body class="bg-sand text-slate-900 pb-32 min-h-screen select-none">
 
     <!-- Header Fijo -->
-    <header class="sticky top-0 z-50 bg-emerald-600 text-white px-4 py-4 shadow-lg border-b border-emerald-700">
+    <header class="sticky top-0 z-50 bg-coral-500 text-white px-4 py-4 shadow-lg border-b border-coral-600">
         <div class="max-w-md mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="bg-white/20 p-2 rounded-xl backdrop-blur-md">
@@ -69,7 +84,7 @@
     <!-- Modal de Transferencia por Archivo -->
     <div id="cloud-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 modal-overlay">
         <div class="bg-white rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl view-transition max-h-[90vh] overflow-y-auto no-scrollbar">
-            <div class="bg-emerald-600 p-6 text-white flex justify-between items-center sticky top-0 z-10">
+            <div class="bg-coral-500 p-6 text-white flex justify-between items-center sticky top-0 z-10">
                 <h3 class="font-black uppercase text-sm tracking-widest text-white">Transferir por WhatsApp</h3>
                 <button onclick="window.toggleCloudModal()"><i data-lucide="x" class="w-5 h-5 text-white"></i></button>
             </div>
@@ -77,7 +92,7 @@
             <div class="p-6 space-y-8 text-black">
                 <div class="space-y-4">
                     <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-2">Compartir Datos</h4>
-                    <button onclick="window.exportDataFile()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-blue-100">
+                    <button onclick="window.exportDataFile()" class="w-full bg-turquoise-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-turquoise-100">
                         <i data-lucide="file-output" class="w-4 h-4 text-white"></i>
                         1. Exportar para WhatsApp
                     </button>
@@ -97,22 +112,26 @@
 
     <!-- Navegación Inferior -->
     <nav class="fixed bottom-6 left-4 right-4 max-w-md mx-auto z-50">
-        <div class="bg-slate-900/95 backdrop-blur-xl rounded-[2.5rem] p-2 flex gap-2 shadow-2xl border border-white/10 ring-1 ring-black/20">
-            <button id="nav-stores" onclick="window.switchView('stores')" class="flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-emerald-500 text-white shadow-lg">
+        <div class="bg-deepteal-900/95 backdrop-blur-xl rounded-[2.5rem] p-2 flex gap-2 shadow-2xl border border-white/10 ring-1 ring-black/20">
+            <button id="nav-stores" onclick="window.switchView('stores')" class="flex-1 py-4 rounded-[2rem] font-black text-[9px] uppercase tracking-wide flex flex-col items-center justify-center gap-1.5 transition-all bg-coral-500 text-white shadow-lg">
                 <i data-lucide="store" class="w-4 h-4 text-white"></i>
                 Tiendas
             </button>
-            <button id="nav-summary" onclick="window.switchView('summary')" class="flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all text-slate-400 relative">
+            <button id="nav-summary" onclick="window.switchView('summary')" class="flex-1 py-4 rounded-[2rem] font-black text-[9px] uppercase tracking-wide flex flex-col items-center justify-center gap-1.5 transition-all text-slate-400 relative">
                 <i data-lucide="clipboard-check" class="w-4 h-4 text-slate-400"></i>
                 Resumen
-                <span id="badge-count" class="hidden absolute -top-1 right-6 bg-rose-500 text-white text-[9px] w-5 h-5 rounded-full flex items-center justify-center font-black ring-4 ring-slate-900">0</span>
+                <span id="badge-count" class="hidden absolute -top-1 right-3 bg-rose-500 text-white text-[9px] w-5 h-5 rounded-full flex items-center justify-center font-black ring-4 ring-deepteal-900">0</span>
+            </button>
+            <button id="nav-history" onclick="window.switchView('history')" class="flex-1 py-4 rounded-[2rem] font-black text-[9px] uppercase tracking-wide flex flex-col items-center justify-center gap-1.5 transition-all text-slate-400">
+                <i data-lucide="history" class="w-4 h-4 text-slate-400"></i>
+                Historial
             </button>
         </div>
     </nav>
 
     <!-- Botón Flotante para Descargar Resumen -->
-    <div id="download-fab" class="fixed bottom-24 right-6 hidden z-40">
-        <button onclick="window.downloadList()" class="bg-blue-600 text-white p-4 rounded-full shadow-2xl active:scale-90 transition-transform">
+    <div id="download-fab" class="fixed bottom-28 right-6 hidden z-40">
+        <button onclick="window.downloadList()" class="bg-turquoise-600 text-white p-4 rounded-full shadow-2xl active:scale-90 transition-transform">
             <i data-lucide="file-text" class="w-6 h-6 text-white"></i>
         </button>
     </div>
@@ -140,6 +159,7 @@
             "Walmart": {
                 "Carnes": ["Jamón", "Sirloni", "Carne Hamb.", "Carne Empan.", "Milanesa"],
                 "Bebidas": ["Coca", "Coca Diet", "Lemonade", "Sprite", "Fanta", "Ginger Ale", "Michelob Ultra", "Heineken", "Sweet Tea", "Unsweet Tea", "High Noon"],
+                "Licores y Cervezas": ["Tequila", "Ron Blanco", "Vodka", "Whisky", "Vino Tinto", "Vino Blanco"],
                 "Lácteos": ["Leche", "Huevos"],
                 "Vegetales": ["Perejil", "Tomate", "Aguacate"],
                 "Otros": ["Aceite Paella"]
@@ -152,28 +172,42 @@
         };
 
         const STORE_THEMES = {
-            "Restaurant Depot": "bg-blue-600",
-            "Sams Club": "bg-purple-600",
-            "Walmart": "bg-amber-500",
-            "GFS Gordon": "bg-rose-600"
+            "Restaurant Depot": "bg-coral-500",
+            "Sams Club": "bg-turquoise-600",
+            "Walmart": "bg-gold-500",
+            "GFS Gordon": "bg-deepteal-600"
         };
 
         // Estado global único con catálogo editable
         window.state = {
-            catalog: JSON.parse(localStorage.getItem('barroluco-catalog-v15') || JSON.stringify(DEFAULT_CATALOG)),
-            quantities: JSON.parse(localStorage.getItem('barroluco-q-v15') || '{}'),
-            checked: JSON.parse(localStorage.getItem('barroluco-c-v15') || '{}'),
+            catalog: JSON.parse(localStorage.getItem('barroluco-catalog-v16') || JSON.stringify(DEFAULT_CATALOG)),
+            quantities: JSON.parse(localStorage.getItem('barroluco-q-v16') || '{}'),
+            checked: JSON.parse(localStorage.getItem('barroluco-c-v16') || '{}'),
+            history: JSON.parse(localStorage.getItem('barroluco-h-v16') || '[]'),
+            expandedHistoryId: null,
             activeStore: "Restaurant Depot",
             searchTerm: "",
             view: "stores"
         };
 
         // --- FUNCIONES DE PERSISTENCIA ---
+        window.renderIcons = () => {
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            } else {
+                console.warn('Lucide no cargó (red bloqueada). Los iconos no se mostrarán, pero la app sigue funcionando.');
+            }
+        };
+
         window.save = () => {
-            localStorage.setItem('barroluco-catalog-v15', JSON.stringify(window.state.catalog));
-            localStorage.setItem('barroluco-q-v15', JSON.stringify(window.state.quantities));
-            localStorage.setItem('barroluco-c-v15', JSON.stringify(window.state.checked));
+            localStorage.setItem('barroluco-catalog-v16', JSON.stringify(window.state.catalog));
+            localStorage.setItem('barroluco-q-v16', JSON.stringify(window.state.quantities));
+            localStorage.setItem('barroluco-c-v16', JSON.stringify(window.state.checked));
             window.updateBadge();
+        };
+
+        window.saveHistory = () => {
+            localStorage.setItem('barroluco-h-v16', JSON.stringify(window.state.history));
         };
 
         window.updateBadge = () => {
@@ -234,16 +268,19 @@
             window.state.view = view;
             const btnStores = document.getElementById('nav-stores');
             const btnSummary = document.getElementById('nav-summary');
+            const btnHistory = document.getElementById('nav-history');
             const downloadBtn = document.getElementById('download-fab');
 
-            if (view === 'stores') {
-                btnStores.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-emerald-500 text-white shadow-lg";
-                btnSummary.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all text-slate-400 relative";
-                if (downloadBtn) downloadBtn.classList.add('hidden');
-            } else {
-                btnSummary.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all bg-emerald-500 text-white shadow-lg relative";
-                btnStores.className = "flex-1 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all text-slate-400";
-                if (downloadBtn) downloadBtn.classList.remove('hidden');
+            const activeClass = "flex-1 py-4 rounded-[2rem] font-black text-[9px] uppercase tracking-wide flex flex-col items-center justify-center gap-1.5 transition-all bg-coral-500 text-white shadow-lg relative";
+            const inactiveClass = "flex-1 py-4 rounded-[2rem] font-black text-[9px] uppercase tracking-wide flex flex-col items-center justify-center gap-1.5 transition-all text-slate-400 relative";
+
+            btnStores.className = view === 'stores' ? activeClass : inactiveClass;
+            btnSummary.className = view === 'summary' ? activeClass : inactiveClass;
+            btnHistory.className = view === 'history' ? activeClass : inactiveClass;
+
+            if (downloadBtn) {
+                if (view === 'summary') downloadBtn.classList.remove('hidden');
+                else downloadBtn.classList.add('hidden');
             }
             window.render();
         };
@@ -359,7 +396,7 @@
             
             if (window.state.view === 'stores') {
                 container.innerHTML = `
-                    <div class="flex overflow-x-auto gap-3 mb-6 no-scrollbar py-2 sticky top-[76px] z-30 bg-slate-50">
+                    <div class="flex overflow-x-auto gap-3 mb-6 no-scrollbar py-2 sticky top-[76px] z-30 bg-sand">
                         ${Object.keys(window.state.catalog).map(store => `
                             <button onclick="window.state.activeStore='${store}'; window.render();" 
                                 class="flex-shrink-0 px-6 py-3 rounded-2xl text-[10px] font-black tracking-widest transition-all ${window.state.activeStore === store ? STORE_THEMES[store] + ' text-white shadow-lg ring-2 ring-white ring-offset-2' : 'bg-white text-slate-500 border border-slate-200'}">
@@ -367,7 +404,7 @@
                             </button>
                         `).join('')}
                     </div>
-                    <div class="relative mb-6 sticky top-[138px] z-30 bg-slate-50 pb-2">
+                    <div class="relative mb-6 sticky top-[138px] z-30 bg-sand pb-2">
                         <i data-lucide="search" class="absolute left-4 top-4 text-slate-400 w-5 h-5"></i>
                         <input type="text" placeholder="Buscar producto..." oninput="window.state.searchTerm = this.value; window.renderItemsOnly();" value="${window.state.searchTerm}"
                             class="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-100 rounded-2xl outline-none shadow-sm font-bold text-sm text-black" />
@@ -375,10 +412,12 @@
                     <div id="items-list" class="space-y-8"></div>
                 `;
                 window.renderItemsOnly();
-            } else {
+            } else if (window.state.view === 'summary') {
                 renderSummaryView(container);
+            } else {
+                renderHistoryView(container);
             }
-            lucide.createIcons();
+            window.renderIcons();
         };
 
         window.renderItemsOnly = () => {
@@ -393,7 +432,7 @@
                     <div class="space-y-4">
                         <div class="flex justify-between items-center pl-2 pr-1">
                             <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${catName}</h3>
-                            <button onclick="window.addNewProduct('${catName}')" class="bg-emerald-100 text-emerald-700 p-1.5 rounded-lg active:scale-90 transition-transform">
+                            <button onclick="window.addNewProduct('${catName}')" class="bg-turquoise-100 text-turquoise-700 p-1.5 rounded-lg active:scale-90 transition-transform">
                                 <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                             </button>
                         </div>
@@ -404,7 +443,7 @@
                     html += filtered.map(item => `
                         <div class="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between shadow-sm ${window.state.checked[item] ? 'opacity-40 grayscale' : ''}">
                             <div class="flex items-center gap-4 flex-1 min-w-0" onclick="window.toggleCheck('${item}')">
-                                <button class="flex-shrink-0 w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all ${window.state.checked[item] ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : 'border-slate-200 bg-white'}">
+                                <button class="flex-shrink-0 w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all ${window.state.checked[item] ? 'bg-turquoise-500 border-turquoise-500 text-white shadow-sm' : 'border-slate-200 bg-white'}">
                                     ${window.state.checked[item] ? '<i data-lucide="check" class="w-5 h-5 text-white"></i>' : ''}
                                 </button>
                                 <span class="font-bold text-slate-700 truncate ${window.state.checked[item] ? 'line-through' : ''}">${item}</span>
@@ -413,7 +452,7 @@
                                 <div class="flex items-center gap-1 bg-slate-50 p-1 rounded-xl border border-slate-100 text-black">
                                     <button onclick="window.updateQuantity('${item}', -1)" class="w-9 h-9 flex items-center justify-center text-rose-500 active:bg-rose-100 rounded-lg transition-all active:scale-75"><i data-lucide="minus" class="w-4 h-4 text-black"></i></button>
                                     <input type="number" class="w-10 text-center bg-transparent font-black text-lg outline-none text-black" value="${window.state.quantities[item] || ""}" placeholder="0" oninput="window.handleInput('${item}', this.value)" />
-                                    <button onclick="window.updateQuantity('${item}', 1)" class="w-9 h-9 flex items-center justify-center text-emerald-600 active:bg-emerald-100 rounded-lg transition-all active:scale-75"><i data-lucide="plus" class="w-4 h-4 text-black"></i></button>
+                                    <button onclick="window.updateQuantity('${item}', 1)" class="w-9 h-9 flex items-center justify-center text-turquoise-600 active:bg-turquoise-100 rounded-lg transition-all active:scale-75"><i data-lucide="plus" class="w-4 h-4 text-black"></i></button>
                                 </div>
                                 <button onclick="window.removeProduct('${catName}', '${item}')" class="p-2 text-slate-300 hover:text-rose-500">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -426,10 +465,10 @@
                 html += `</div></div>`;
             }
             listContainer.innerHTML = html;
-            lucide.createIcons();
+            window.renderIcons();
         };
 
-        function renderSummaryView(container) {
+        window.getSummaryData = () => {
             const summaryData = [];
             for (const [store, categories] of Object.entries(window.state.catalog)) {
                 const sItems = [];
@@ -439,8 +478,77 @@
                 }
                 if (sItems.length > 0) summaryData.push({ store, categories: sItems });
             }
+            return summaryData;
+        };
+
+        window.getSummarySnapshot = () => {
+            const summaryData = window.getSummaryData();
+            return summaryData.map(s => ({
+                store: s.store,
+                categories: s.categories.map(c => ({
+                    cat: c.cat,
+                    items: c.items.map(i => ({ name: i, qty: window.state.quantities[i], checked: !!window.state.checked[i] }))
+                }))
+            }));
+        };
+
+        window.saveToHistory = () => {
+            const snapshot = window.getSummarySnapshot();
+            if (snapshot.length === 0) {
+                alert("No hay productos seleccionados para guardar.");
+                return;
+            }
+            if (!confirm("¿Guardar esta lista en el historial y comenzar una lista nueva?")) return;
+            const entry = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+                data: snapshot
+            };
+            window.state.history.unshift(entry);
+            if (window.state.history.length > 30) window.state.history = window.state.history.slice(0, 30);
+            window.state.quantities = {};
+            window.state.checked = {};
+            window.saveHistory();
+            window.save();
+            window.switchView('history');
+        };
+
+        window.toggleHistoryExpand = (id) => {
+            window.state.expandedHistoryId = window.state.expandedHistoryId === id ? null : id;
+            window.render();
+        };
+
+        window.deleteHistoryEntry = (id) => {
+            if (!confirm("¿Eliminar esta lista del historial?")) return;
+            window.state.history = window.state.history.filter(e => e.id !== id);
+            window.saveHistory();
+            window.render();
+        };
+
+        window.reuseHistoryEntry = (id) => {
+            const entry = window.state.history.find(e => e.id === id);
+            if (!entry) return;
+            if (!confirm("Esto cargará las cantidades de esta lista sobre tu lista actual. ¿Continuar?")) return;
+            entry.data.forEach(s => {
+                s.categories.forEach(c => {
+                    c.items.forEach(i => {
+                        window.state.quantities[i.name] = i.qty;
+                        window.state.checked[i.name] = i.checked;
+                    });
+                });
+            });
+            window.save();
+            window.switchView('summary');
+        };
+
+        function renderSummaryView(container) {
+            const summaryData = window.getSummaryData();
             let html = `<div class="mb-8 text-black"><h2 class="text-3xl font-black tracking-tighter">Resumen Barroluco</h2></div>`;
             if (summaryData.length > 0) {
+                html += `<button onclick="window.saveToHistory()" class="w-full mb-6 bg-turquoise-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-turquoise-100">
+                    <i data-lucide="archive" class="w-4 h-4 text-white"></i>
+                    Guardar en Historial
+                </button>`;
                 html += `<div class="space-y-10 pb-10 text-black">`;
                 summaryData.forEach(s => {
                     html += `<div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-xl text-black">
@@ -450,14 +558,56 @@
                                 <div class="space-y-1 text-black">${c.items.map(item => `
                                     <div onclick="window.toggleCheck('${item}')" class="py-3 flex items-center justify-between transition-all ${window.state.checked[item] ? 'opacity-30 grayscale' : ''}">
                                         <div class="flex items-center gap-4 text-black">
-                                            <div class="w-7 h-7 rounded-lg border-2 flex items-center justify-center ${window.state.checked[item] ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-200'}">
+                                            <div class="w-7 h-7 rounded-lg border-2 flex items-center justify-center ${window.state.checked[item] ? 'bg-turquoise-500 border-turquoise-500 text-white' : 'border-slate-200'}">
                                                 ${window.state.checked[item] ? '<i data-lucide="check" class="w-4 h-4 text-white"></i>' : ''}</div>
                                             <span class="font-bold text-sm text-slate-700 ${window.state.checked[item] ? 'line-through' : ''}">${item}</span></div>
-                                        <span class="bg-slate-900 text-white font-black w-10 h-10 flex items-center justify-center rounded-2xl text-xs ring-4 ring-slate-50 text-black">${window.state.quantities[item]}</span>
+                                        <span class="bg-deepteal-600 text-white font-black w-10 h-10 flex items-center justify-center rounded-2xl text-xs ring-4 ring-sand">${window.state.quantities[item]}</span>
                                     </div>`).join('')}</div></div>`).join('')}</div></div>`;
                 });
                 html += `</div>`;
             } else { html += `<div class="text-center py-24 bg-white rounded-[3rem] border-4 border-dashed border-slate-200 font-bold text-slate-400">LA LISTA ESTÁ VACÍA</div>`; }
+            container.innerHTML = html;
+        }
+
+        function renderHistoryView(container) {
+            const history = window.state.history || [];
+            let html = `<div class="mb-8 text-black"><h2 class="text-3xl font-black tracking-tighter">Historial</h2></div>`;
+            if (history.length === 0) {
+                html += `<div class="text-center py-24 bg-white rounded-[3rem] border-4 border-dashed border-slate-200 font-bold text-slate-400">AÚN NO HAY LISTAS GUARDADAS</div>`;
+            } else {
+                html += `<div class="space-y-4 pb-10 text-black">`;
+                history.forEach(entry => {
+                    const totalItems = entry.data.reduce((acc, s) => acc + s.categories.reduce((a, c) => a + c.items.length, 0), 0);
+                    const isOpen = window.state.expandedHistoryId === entry.id;
+                    html += `<div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden text-black">
+                        <div onclick="window.toggleHistoryExpand(${entry.id})" class="px-6 py-5 flex items-center justify-between cursor-pointer">
+                            <div>
+                                <p class="font-black text-sm text-slate-700">${entry.date}</p>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">${totalItems} productos · ${entry.data.length} tiendas</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="event.stopPropagation(); window.reuseHistoryEntry(${entry.id})" class="p-2 bg-turquoise-100 text-turquoise-700 rounded-xl" title="Reutilizar"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>
+                                <button onclick="event.stopPropagation(); window.deleteHistoryEntry(${entry.id})" class="p-2 bg-rose-100 text-rose-600 rounded-xl" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <i data-lucide="${isOpen ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4 text-slate-400"></i>
+                            </div>
+                        </div>
+                        ${isOpen ? `<div class="px-6 pb-6 space-y-5 border-t border-slate-100 pt-4">
+                            ${entry.data.map(s => `
+                                <div class="space-y-2">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-coral-600">${s.store}</p>
+                                    ${s.categories.map(c => `
+                                        <div class="pl-2">
+                                            <p class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">${c.cat}</p>
+                                            ${c.items.map(i => `<p class="text-xs font-bold text-slate-600 flex justify-between py-0.5"><span>${i.name}</span><span class="text-slate-400">${i.qty}</span></p>`).join('')}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            `).join('')}
+                        </div>` : ''}
+                    </div>`;
+                });
+                html += `</div>`;
+            }
             container.innerHTML = html;
         }
 
